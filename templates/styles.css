@@ -1,0 +1,764 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+/* General Styles */
+body {
+  min-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  font-family: "Inter", sans-serif;
+  background-color: #f3f4f6;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  border-radius: 12px; /* Add rounded corners */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Optional shadow */
+  overflow: hidden; /* Prevent overflow outside rounded corners */
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-wrapper {
+  overflow: hidden; /* Clip overflowing content */
+  background-color: #ffffff; /* Match with overall design */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Elevated look */
+}
+
+#user-prompt {
+  width: 90%;
+}
+
+.input-container {
+  background-color: lightgoldenrodyellow;
+}
+#upload-file-button {
+  padding: 8px;
+  width: 100%;
+  margin-bottom: 15px; /* Adds space below each container */
+}
+
+/* Header Styles */
+h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #4caf50; /* Vibrant green */
+  margin-bottom: 20px;
+  text-align: center;
+  padding-bottom: 10px;
+  width: 100%;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #4caf50; /* Vibrant green */
+  margin-bottom: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.header h1 {
+  font-size: 40px; /* Larger header text */
+  color: #4caf50;
+  margin: 0;
+}
+
+#close-button {
+  background: none;
+  color: #f44336; /* Red color for the "X" */
+  border: none;
+  font-size: 20px; /* Slightly larger font size for better visibility */
+  font-weight: bold;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  left: 180px;
+  padding: 0;
+  box-shadow: none;
+}
+
+#close-button:hover {
+  color: #d32f2f; /* Slightly darker red on hover */
+}
+
+/* Textarea for User Input */
+textarea {
+  width: 100%;
+  height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  resize: none;
+  background-color: #ffffff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s;
+}
+
+textarea:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+/* Button Container */
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Space between the buttons */
+  width: 100%; /* Full width of the parent */
+  margin-bottom: 15px; /* Adds space below each container */
+}
+
+.button-container button {
+  flex: 1; /* Make both buttons equal in size */
+  margin: 0 5px; /* Add spacing between buttons */
+}
+
+#summarize-button,
+#format-button {
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: normal; /* Reset line-height if needed */
+  padding: 6px; /* Adjust padding to keep text centered */
+}
+
+/* Buttons */
+button {
+  width: 100%;
+  background-color: #4caf50; /* Green for primary buttons */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+#send-prompt {
+  background-color: #4caf50; /* Green for the Send button */
+}
+
+#send-prompt:hover {
+  background-color: #45a049;
+}
+
+#clear-history {
+  background-color: #f44336; /* Red for the Clear Chat button */
+}
+
+#clear-history:hover {
+  background-color: #d32f2f;
+}
+
+/* AI Response Section */
+#response {
+  margin: 0px 0px 15px 0px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+#response::-webkit-scrollbar-thumb {
+  background-color: #4caf50;
+  border-radius: 8px;
+}
+
+#response::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+#response ol {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+#response ol li {
+  margin-top: 10px;
+  line-height: 1.6;
+  font-size: 14px;
+  color: #333;
+}
+
+#response::-webkit-scrollbar {
+  width: 8px;
+}
+
+#response::-webkit-scrollbar-thumb {
+  background-color: #4caf50;
+  border-radius: 8px;
+}
+
+#response::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+.show-more-button {
+  display: block;
+  margin-top: 15px;
+  color: #4caf50;
+  cursor: pointer;
+  font-size: 14px;
+  background: none;
+  border: none;
+  /* font-weight: bold; */
+}
+
+.show-more-button:hover {
+  text-decoration: underline;
+}
+
+/* Chat History Section */
+.chat-history-container {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.chat-history-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #4caf50;
+  text-align: center;
+}
+
+.chat-history {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column; /* Stack messages from top to bottom */
+  margin-top: 20px;
+}
+
+/* Optional: Customize the scrollbar */
+.chat-history::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-history::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.chat-history::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.chat-message {
+  margin: 10px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #0000001a;
+  max-width: 100%; /* Ensures messages don't exceed the container's width */
+  word-wrap: break-word; /* Breaks long words to prevent horizontal overflow */
+}
+
+.chat-message:last-child {
+  border-bottom: none;
+}
+
+.chat-message .user {
+  /* font-weight: bold; */
+  margin-bottom: 10px;
+}
+
+.chat-message .ai {
+  color: #333;
+  font-size: 10px;
+}
+
+/* Delete Chat Button Styles */
+.delete-chat {
+  background-color: #f44336; /* Red for delete action */
+  color: white;
+}
+
+.delete-chat:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}
+
+.delete-chat:active {
+  transform: scale(0.98);
+}
+
+.download-chat {
+  margin-top: 5px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.download-chat:hover {
+  background-color: #0056b3;
+}
+
+/* Common styles for both Download and Delete buttons */
+.common-button {
+  margin-top: 10px;
+  border: 1px solid #0000001a;
+  color: #333;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 10px;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+/* Specific styles for Download Chat button */
+.download-chat {
+  background-color: var(--button-bg-color, #e0e0e0); /* Default light gray */
+}
+
+/* Specific styles for Delete Chat button */
+.delete-chat {
+  background-color: var(--button-bg-color, #e0e0e0); /* Same as Download Chat */
+}
+
+/* Hover Effects */
+.download-chat:hover {
+  background-color: #d5d5d5;
+}
+
+.delete-chat:hover {
+  background-color: #d32f2f;
+}
+
+.chat-message .formatted-response {
+  margin-top: 5px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  border: 1px solid #0000001a;
+}
+
+.chat-message .timestamp {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
+}
+
+/* Overlay Styles */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.overlay-content {
+  background: white;
+  padding: 0px 20px 20px 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  max-width: 400px;
+}
+
+/* Close Button Styles */
+#close-overlay {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  height: 450px;
+  background-color: #f44336;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#close-overlay:hover {
+  background-color: #d32f2f;
+}
+
+.trigger-overlay-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 15px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1010;
+}
+
+.trigger-overlay-button:hover {
+  background-color: #388e3c;
+}
+
+#save-all-chats {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 0;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  display: none;
+}
+
+#save-all-chats.visible {
+  display: inline-block; /* Show when visible */
+}
+
+#save-all-chats:hover {
+  background-color: #0056b3;
+}
+
+.chat-message.chat {
+  background-color: #f7ffeb; /* Light green */
+}
+.chat-message.summarize {
+  background-color: #e7f4ff; /* Light blue */
+}
+.chat-message.generate-bullet-points {
+  background-color: #f3e7ff; /* Light purple */
+}
+.chat-message.draft-summary {
+  background-color: #fffbe7; /* Light yellow */
+}
+
+/* Removed upload-container and file-upload styles
+     since the file upload section is removed */
+
+/* Keep upload-label because it's used by the Summarize Modal */
+.upload-label {
+  font-weight: bold;
+  cursor: pointer; /* Ensure cursor reflects clickable action */
+}
+
+.main-dropdown-container {
+  position: relative;
+  display: inline-block;
+  width: 97%;
+  margin-bottom: 15px;
+}
+/* Dropdown and Modal styling */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  /* width: 97%; */
+  margin-bottom: 15px;
+}
+
+.dropdown-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropdown-button:hover {
+  background-color: #45a049;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ffffff;
+  min-width: 180px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+  transition: opacity 0.2s ease;
+  opacity: 0;
+  z-index: 100;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 12px 15px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  transition: background-color 0.1s ease;
+}
+
+.dropdown-content a:hover {
+  background-color: #f3f3f3;
+}
+
+.dropdown-container.show .dropdown-content {
+  display: block;
+  opacity: 1;
+}
+
+button.active {
+  position: relative;
+}
+
+button.active::after {
+  content: "✓";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: green;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  padding: 8px 12px;
+  display: block;
+  color: black;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background-color: #f3f3f3;
+}
+
+.tag-section input {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.button-container button {
+  margin: 5px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+}
+
+.button-container button:hover {
+  background-color: #45a049;
+}
+
+button#close-modal {
+  background-color: #f44336;
+}
+
+button#close-modal:hover {
+  background-color: #d32f2f;
+}
+
+/* Modal Overlay */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.hidden {
+  display: none !important;
+}
+
+.hidden-input {
+  display: none;
+}
+
+#upload-indicator.hidden {
+  display: none;
+}
+
+.upload-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+  padding: 10px;
+  border: 2px solid #4caf50;
+  border-radius: 8px;
+  background-color: #f0fff0;
+  transition: opacity 0.3s ease;
+  font-size: 14px;
+  color: #333;
+}
+
+.upload-indicator .checkmark {
+  color: #4caf50;
+  font-weight: bold;
+  font-size: 18px;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.upload-indicator .file-info {
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  display: inline-block;
+}
+
+.upload-indicator.hidden {
+  display: none;
+}
+
+.clickable-label {
+  cursor: pointer;
+}
+
+.clickable-label {
+  cursor: pointer;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+  width: 350px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  margin: 20px;
+}
+
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px 0;
+  cursor: pointer;
+}
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: black;
+}
+
+.drop-area {
+  border: 2px dashed #4caf50;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 15px;
+  background-color: #f9f9f9;
+  transition: background-color 0.2s;
+}
+
+.drop-area p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.drop-area.drag-over {
+  background-color: #e7ffe7; /* Light green tint when dragging file over */
+}
+
+.tags-section input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Footer Style */
+footer {
+  margin-top: 20px;
+  font-size: 10px;
+  color: #aaa;
+  text-align: center;
+}
+
+footer a {
+  color: #4caf50;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}

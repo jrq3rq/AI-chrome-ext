@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "AI Chatbot + DB",
+  "version": "2.0",
+  "description": "Interactive AI chatbot extension for personalized conversations, chat history management, and streamlined user interactions.",
+  "permissions": ["activeTab"],
+  "host_permissions": ["http://localhost:3000/*"],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "clients/business-name/branding/logo.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; style-src 'self' https://cdnjs.cloudflare.com; object-src 'none';"
+  }
+}

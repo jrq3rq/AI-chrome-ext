@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Grok AI Chat</title>
+    <link rel="stylesheet" href="templates/styles.css" />
+    <meta charset="UTF-8" />
+  </head>
+  <body class="popup-wrapper">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>Grok Bot</h1>
+      <button id="close-button" aria-label="Close">X</button>
+    </div>
+    <!-- Input Section -->
+    <div class="input-section">
+      <!-- Action Dropdown -->
+      <div class="dropdown-container">
+        <label for="action-dropdown">Select Action:</label>
+        <select id="action-dropdown" aria-label="Select Action">
+          <option value="chat">Chat</option>
+          <option value="summarize">Summarize</option>
+          <option value="generate-bullet-points">Generate Bullet Points</option>
+          <option value="draft-summary">Draft Summary</option>
+        </select>
+      </div>
+      <!-- Text Input -->
+      <textarea
+        id="user-prompt"
+        placeholder="Type your message..."
+        aria-label="User Prompt"
+      ></textarea>
+
+      <!-- Drag & Drop Area (Replaces Upload Button) -->
+      <p>Drag & Drop files here or click to upload</p>
+      <div
+        class="drop-area"
+        id="drop-area"
+        tabindex="0"
+        aria-label="File Upload Area"
+      >
+        <input
+          type="file"
+          id="summarize-file-upload"
+          accept=".txt, .doc, .docx, .odt, .rtf, .pdf, .xls, .xlsx, .ods, .ppt, .pptx, .odp, .csv, .json, .xml, .jpg, .jpeg, .png, .tiff, .mp3, .mp4, .avi"
+          class="hidden-input"
+          aria-hidden="true"
+        />
+      </div>
+
+      <!-- Uploaded File Indicator -->
+      <div id="upload-indicator" class="hidden" aria-live="polite">
+        <span id="uploaded-filename"></span>
+      </div>
+
+      <!-- Clear File Button -->
+      <div class="button-container">
+        <button id="clear-file">Clear File</button>
+      </div>
+    </div>
+    <!-- AI Response Section -->
+    <div id="response">
+      <div class="ai">
+        <strong>AI Chatbot:</strong>
+        <div class="formatted-response"></div>
+      </div>
+    </div>
+    <!-- Existing Buttons -->
+    <div class="button-container">
+      <button id="send-prompt">Send</button>
+      <button id="clear-history">Clear Chat</button>
+    </div>
+
+    <!-- Download All Chats Button -->
+    <button id="save-all-chats">Download All Chats</button>
+
+    <!-- Script: Load Tesseract.js First -->
+
+    <script type="module" src="templates/popup.js"></script>
+
+    <!-- Firm Info Section -->
+    <div id="firm-info"></div>
+
+    <!-- Footer Section -->
+    <footer>
+      Built with ❤️ by
+      <a href="https://studiovoice2fly.com/" target="_blank"
+        >StudioVoice2fly.com</a
+      >
+    </footer>
+  </body>
+</html>
