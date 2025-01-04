@@ -1,0 +1,27 @@
+{
+  "name": "grok-api-interaction-database",
+  "version": "1.0.0",
+  "description": "This repository is designed for creating bespoke Chrome extensions tailored to client-specific workflows. It includes a modular architecture for reusability, extensibility, and easy customization for different industries.",
+  "main": "grok-interaction.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "firebase": "^11.1.0",
+    "mammoth": "^1.8.0",
+    "multer": "^1.4.5-lts.1",
+    "pdfjs-dist": "^3.11.174",
+    "react-icons": "^5.4.0",
+    "tesseract.js": "^5.1.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "vite": "^6.0.6"
+  }
+}
