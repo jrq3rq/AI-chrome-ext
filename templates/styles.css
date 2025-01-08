@@ -27,6 +27,25 @@ button {
   justify-content: center;
 }
 
+.btn-wrap {
+  display: flex;
+  flex-direction: column; /* Arrange rows vertically */
+  gap: 10px; /* Space between rows */
+  margin-top: 10px;
+  width: 100%; /* Span the width of the container */
+}
+
+.btn-row {
+  display: flex;
+  justify-content: flex-start; /* Align buttons to the start */
+  gap: 10px; /* Space between buttons */
+}
+
+.full-width-btn {
+  width: 100%; /* Full width for the bottom button */
+  text-align: center; /* Center-align text */
+}
+
 .popup-wrapper {
   overflow: hidden; /* Clip overflowing content */
   background-color: #ffffff; /* Match with overall design */

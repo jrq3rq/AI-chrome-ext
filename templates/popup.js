@@ -1,9 +1,21 @@
+import { generateICSFile } from "../core/calendar-util.js";
 import clientMetadata from "../core/clientMetadata.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   /********************************************************
    * ============  Utility Functions  ======================
    ********************************************************/
+  function handleICSDownload() {
+    const eventDetails = {
+      title: "Sample Event Title", // Replace or make dynamic
+      description: "Description of the event goes here.", // Replace or make dynamic
+      location: "Office Conference Room", // Replace or make dynamic
+      startDate: new Date("2025-01-10T09:00:00Z"), // Replace or make dynamic
+      endDate: new Date("2025-01-10T10:00:00Z"), // Replace or make dynamic
+    };
+
+    generateICSFile(eventDetails);
+  }
   // Generates a UUID-like ID
   function generateUniqueId() {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -23,15 +35,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Builds a prompt for each action
   function constructPrompt(action, userInput) {
+    const sanitizedInput = cleanResponse(userInput); // Sanitize input
     switch (action) {
       case "chat":
-        return `Chat mode: ${userInput}`;
+        return `Paralegal Mode: ${sanitizedInput}`;
       case "summarize":
         return `Summarize the following content in the least amount of words but don't leave out any important information: \n\n${userInput}`;
       case "generate-bullet-points":
-        return `Convert to bullet points:\n\n${userInput}`;
+        return `Convert to bullet points:\n\n${sanitizedInput}`;
       case "draft-summary":
-        return `Draft a summary:\n\n${userInput}`;
+        return `Draft a summary:\n\n${sanitizedInput}`;
+
+      // New paralegal-related cases:
+      case "document-preparation":
+        return `Assist with document preparation, including formatting and reviewing:\n\n${sanitizedInput}`;
+      case "legal-research":
+        return `Conduct thorough legal research on the following topic:\n\n${sanitizedInput}`;
+      case "case-management":
+        return `Assist with case management tasks, including tracking deadlines and organizing files:\n\n${sanitizedInput}`;
+      case "client-interaction":
+        return `Provide assistance with client interaction tasks. Prepare the following:\n\n${sanitizedInput}`;
+
       default:
         throw new Error("Invalid action selected.");
     }
@@ -39,44 +63,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Cleans markdown from response for on-screen display
   function cleanResponse(response) {
-    return response.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+    return response
+      .replace(/###/g, "") // Remove hashes
+      .replace(/\*\*(.*?)\*\*/g, "$1") // Remove bold markdown
+      .replace(/\s+/g, " ") // Normalize whitespace
+      .trim();
   }
 
   // **NEW**: Removes unwanted Markdown but **preserves** bullet points or special formatting for downloads
+
   function sanitizeForDownload(text) {
-    // Strip bold (`**...**`), italics, etc., but keep lines starting with dashes, asterisks, etc.
-    let stripped = text.replace(/\*\*(.*?)\*\*/g, "$1");
-    // You can add more rules here if you want to remove other Markdown elements
-    return stripped.trim();
+    return text
+      .replace(/[*#]/g, "") // Remove Markdown-like formatting
+      .replace(/\s{2,}/g, " ") // Replace multiple spaces with a single space
+      .replace(/^\s+|\s+$/gm, "") // Trim leading and trailing whitespace from each line
+      .replace(/\n{2,}/g, "\n\n") // Replace multiple newlines with a single newline
+      .trim(); // Remove extra spaces at the start and end
   }
 
-  // Truncates displayed text on the UI
-  function formatAndTruncateResponse(message, truncateParagraphs = 1) {
-    const cleaned = cleanResponse(message)
-      .split("\n")
-      .filter((l) => l.trim());
+  function formatAndTruncateResponse(message, sentenceLimit = 4) {
+    const cleaned = cleanResponse(message); // Clean unwanted characters
+
+    // Split text into sentences using punctuation as delimiters
+    const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [cleaned]; // Split into sentences or fallback to full text
+
     const wrapper = document.createElement("div");
     wrapper.className = "formatted-response";
 
-    // Show top paragraphs
-    const truncated = cleaned.slice(0, truncateParagraphs);
-    truncated.forEach((section) => {
-      const p = document.createElement("p");
-      p.textContent = section;
-      wrapper.appendChild(p);
-    });
+    // Limit to the first `sentenceLimit` sentences
+    const truncatedSentences = sentences.slice(0, sentenceLimit);
+    const remainingSentences = sentences.slice(sentenceLimit);
 
-    // Toggle "Show More"
-    if (cleaned.length > truncateParagraphs) {
+    // Create the truncated paragraph
+    const truncatedP = document.createElement("p");
+    truncatedP.textContent = truncatedSentences.join(" ");
+    wrapper.appendChild(truncatedP);
+
+    // Add "Show More" logic for remaining sentences
+    if (remainingSentences.length > 0) {
       const fullDiv = document.createElement("div");
       fullDiv.className = "full-response";
-      fullDiv.style.display = "none";
-      cleaned.forEach((section) => {
-        const p = document.createElement("p");
-        p.textContent = section.trim();
-        fullDiv.appendChild(p);
-      });
+      fullDiv.style.display = "none"; // Hidden initially
+      fullDiv.textContent = remainingSentences.join(" ");
 
+      // Create the "Show More" toggle
       const toggle = document.createElement("span");
       toggle.textContent = " Show More...";
       toggle.className = "show-more-link";
@@ -84,17 +114,19 @@ document.addEventListener("DOMContentLoaded", () => {
       toggle.style.cursor = "pointer";
       toggle.addEventListener("click", () => {
         if (fullDiv.style.display === "none") {
-          fullDiv.style.display = "block";
+          fullDiv.style.display = "inline"; // Show the full text
           toggle.textContent = " Show Less...";
         } else {
-          fullDiv.style.display = "none";
+          fullDiv.style.display = "none"; // Hide the full text
           toggle.textContent = " Show More...";
         }
       });
 
+      // Append the full text and toggle to the wrapper
       wrapper.appendChild(fullDiv);
       wrapper.appendChild(toggle);
     }
+
     return wrapper;
   }
 
@@ -277,15 +309,26 @@ Legal Disclaimer: ${clientMetadata.legalDisclaimer}`;
   function getBackgroundColor(a) {
     switch (a) {
       case "chat":
-        return "#f7ffeb";
+        return "#f7ffeb"; // Existing Chat
       case "summarize":
-        return "#e7f4ff";
+        return "#e7f4ff"; // Existing Summarize
       case "generate-bullet-points":
-        return "#f3e7ff";
+        return "#f3e7ff"; // Existing Generate Bullet Points
       case "draft-summary":
-        return "#fffbe7";
+        return "#fffbe7"; // Existing Draft Summary
+
+      // New actions with their own colors:
+      case "document-preparation":
+        return "#e0fffa"; // Light teal for Document Prep
+      case "legal-research":
+        return "#ffe0f6"; // Light pink for Legal Research
+      case "case-management":
+        return "#e7ffe0"; // Light green for Case Management
+      case "client-interaction":
+        return "#fff0e0"; // Light orange for Client Interaction
+
       default:
-        return "#f7ffeb";
+        return "#f7ffeb"; // Fallback color
     }
   }
 
@@ -550,6 +593,15 @@ ${sanitizedAI}
   }
 
   /********************************************************
+   * ==========  Add Event Listener for .ics Download ======
+   ********************************************************/
+
+  const downloadICSButton = document.getElementById("download-ics");
+  if (downloadICSButton) {
+    downloadICSButton.addEventListener("click", handleICSDownload);
+  }
+
+  /********************************************************
    * ============  File Upload Event Listeners  ===========
    ********************************************************/
   function showUploadIndicator(fname) {
@@ -723,11 +775,11 @@ ${sanitizedAI}
     timeDiv.textContent = `Sent on: ${formatTimestamp(chat.time)}`;
     timeDiv.style.color = "#9d9d9d";
 
-    // Download Button
+    // Download Chat Button
     const dlBtn = document.createElement("button");
     dlBtn.className = "download-chat";
     dlBtn.textContent = "Download Chat";
-    dlBtn.style.marginTop = "10px";
+    dlBtn.style.marginTop = "5px";
     dlBtn.style.backgroundColor = getBackgroundColor(action);
     dlBtn.style.border = "1px solid #0000001a";
     dlBtn.style.color = "#333";
@@ -739,11 +791,11 @@ ${sanitizedAI}
     dlBtn.style.cursor = "pointer";
     dlBtn.addEventListener("click", () => downloadChat(chat));
 
-    // Delete Button
+    // Delete Chat Button
     const delBtn = document.createElement("button");
     delBtn.className = "delete-chat";
     delBtn.textContent = "Delete Chat";
-    delBtn.style.marginTop = "10px";
+    delBtn.style.marginTop = "5px";
     delBtn.style.backgroundColor = getBackgroundColor(action);
     delBtn.style.border = "1px solid #0000001a";
     delBtn.style.color = "#333";
@@ -760,14 +812,50 @@ ${sanitizedAI}
       if (confirm("Delete this chat?")) deleteChat(cid);
     });
 
+    // ICS Download Button
+    const icsBtn = document.createElement("button");
+    icsBtn.className = "download-chat";
+    icsBtn.textContent = "Download Event (.ics)";
+    icsBtn.style.marginTop = "5px";
+    icsBtn.style.backgroundColor = getBackgroundColor(action);
+    icsBtn.style.border = "1px solid #0000001a";
+    icsBtn.style.color = "#333";
+    icsBtn.style.padding = "10px";
+    icsBtn.style.borderRadius = "5px";
+    icsBtn.style.fontSize = "10px";
+    icsBtn.style.textTransform = "uppercase";
+    icsBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
+    icsBtn.style.cursor = "pointer";
+    icsBtn.addEventListener("click", () => {
+      const eventDetails = {
+        title: `Chat with ${chat.user}`, // Replace with dynamic content
+        description: `AI Response: ${chat.ai}`, // Replace with dynamic content
+        location: "Online", // Optional: add a meaningful location
+        startDate: new Date(), // Replace with an appropriate timestamp
+        endDate: new Date(new Date().getTime() + 60 * 60 * 1000), // Example: 1-hour duration
+      };
+      generateICSFile(eventDetails);
+    });
+
     // Buttons Container
     const btnWrap = document.createElement("div");
-    btnWrap.style.display = "flex";
-    btnWrap.style.justifyContent = "flex-start";
-    btnWrap.style.alignItems = "center";
-    btnWrap.style.marginTop = "10px";
-    btnWrap.appendChild(dlBtn);
-    btnWrap.appendChild(delBtn);
+    btnWrap.className = "btn-wrap";
+
+    // Horizontal row for "Download Chat" and "Delete Chat"
+    const btnRow = document.createElement("div");
+    btnRow.className = "btn-row";
+    btnRow.appendChild(dlBtn); // Add "Download Chat" button
+    btnRow.appendChild(delBtn); // Add "Delete Chat" button
+
+    // Style the full-width "Download Event (.ICS)" button
+    icsBtn.className = "full-width-btn";
+
+    // Add the rows to the button container
+    btnWrap.appendChild(btnRow);
+    btnWrap.appendChild(icsBtn);
+
+    // Append the button container to the chat message
+    cMsg.appendChild(btnWrap);
 
     // Assemble Chat Message
     cMsg.appendChild(userDiv);
