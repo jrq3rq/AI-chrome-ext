@@ -27,6 +27,7 @@ button {
   justify-content: center;
 }
 
+<<<<<<< HEAD
 .btn-wrap {
   display: flex;
   flex-direction: column; /* Arrange rows vertically */
@@ -46,6 +47,8 @@ button {
   text-align: center; /* Center-align text */
 }
 
+=======
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
 .popup-wrapper {
   overflow: hidden; /* Clip overflowing content */
   background-color: #ffffff; /* Match with overall design */

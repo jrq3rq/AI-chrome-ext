@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 import { generateICSFile } from "../core/calendar-util.js";
+=======
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
 import clientMetadata from "../core/clientMetadata.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   /********************************************************
    * ============  Utility Functions  ======================
    ********************************************************/
+<<<<<<< HEAD
   function handleICSDownload() {
     const eventDetails = {
       title: "Sample Event Title", // Replace or make dynamic
@@ -16,6 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     generateICSFile(eventDetails);
   }
+=======
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
   // Generates a UUID-like ID
   function generateUniqueId() {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -35,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Builds a prompt for each action
   function constructPrompt(action, userInput) {
+<<<<<<< HEAD
     const sanitizedInput = cleanResponse(userInput); // Sanitize input
     switch (action) {
       case "chat":
@@ -56,6 +63,17 @@ document.addEventListener("DOMContentLoaded", () => {
       case "client-interaction":
         return `Provide assistance with client interaction tasks. Prepare the following:\n\n${sanitizedInput}`;
 
+=======
+    switch (action) {
+      case "chat":
+        return `Chat mode: ${userInput}`;
+      case "summarize":
+        return `Summarize the following content in the least amount of words but don't leave out any important information: \n\n${userInput}`;
+      case "generate-bullet-points":
+        return `Convert to bullet points:\n\n${userInput}`;
+      case "draft-summary":
+        return `Draft a summary:\n\n${userInput}`;
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
       default:
         throw new Error("Invalid action selected.");
     }
@@ -63,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Cleans markdown from response for on-screen display
   function cleanResponse(response) {
+<<<<<<< HEAD
     return response
       .replace(/###/g, "") // Remove hashes
       .replace(/\*\*(.*?)\*\*/g, "$1") // Remove bold markdown
@@ -107,6 +126,46 @@ document.addEventListener("DOMContentLoaded", () => {
       fullDiv.textContent = remainingSentences.join(" ");
 
       // Create the "Show More" toggle
+=======
+    return response.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+  }
+
+  // **NEW**: Removes unwanted Markdown but **preserves** bullet points or special formatting for downloads
+  function sanitizeForDownload(text) {
+    // Strip bold (`**...**`), italics, etc., but keep lines starting with dashes, asterisks, etc.
+    let stripped = text.replace(/\*\*(.*?)\*\*/g, "$1");
+    // You can add more rules here if you want to remove other Markdown elements
+    return stripped.trim();
+  }
+
+  // Truncates displayed text on the UI
+  function formatAndTruncateResponse(message, truncateParagraphs = 1) {
+    const cleaned = cleanResponse(message)
+      .split("\n")
+      .filter((l) => l.trim());
+    const wrapper = document.createElement("div");
+    wrapper.className = "formatted-response";
+
+    // Show top paragraphs
+    const truncated = cleaned.slice(0, truncateParagraphs);
+    truncated.forEach((section) => {
+      const p = document.createElement("p");
+      p.textContent = section;
+      wrapper.appendChild(p);
+    });
+
+    // Toggle "Show More"
+    if (cleaned.length > truncateParagraphs) {
+      const fullDiv = document.createElement("div");
+      fullDiv.className = "full-response";
+      fullDiv.style.display = "none";
+      cleaned.forEach((section) => {
+        const p = document.createElement("p");
+        p.textContent = section.trim();
+        fullDiv.appendChild(p);
+      });
+
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
       const toggle = document.createElement("span");
       toggle.textContent = " Show More...";
       toggle.className = "show-more-link";
@@ -114,19 +173,32 @@ document.addEventListener("DOMContentLoaded", () => {
       toggle.style.cursor = "pointer";
       toggle.addEventListener("click", () => {
         if (fullDiv.style.display === "none") {
+<<<<<<< HEAD
           fullDiv.style.display = "inline"; // Show the full text
           toggle.textContent = " Show Less...";
         } else {
           fullDiv.style.display = "none"; // Hide the full text
+=======
+          fullDiv.style.display = "block";
+          toggle.textContent = " Show Less...";
+        } else {
+          fullDiv.style.display = "none";
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
           toggle.textContent = " Show More...";
         }
       });
 
+<<<<<<< HEAD
       // Append the full text and toggle to the wrapper
       wrapper.appendChild(fullDiv);
       wrapper.appendChild(toggle);
     }
 
+=======
+      wrapper.appendChild(fullDiv);
+      wrapper.appendChild(toggle);
+    }
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
     return wrapper;
   }
 
@@ -309,6 +381,7 @@ Legal Disclaimer: ${clientMetadata.legalDisclaimer}`;
   function getBackgroundColor(a) {
     switch (a) {
       case "chat":
+<<<<<<< HEAD
         return "#f7ffeb"; // Existing Chat
       case "summarize":
         return "#e7f4ff"; // Existing Summarize
@@ -329,6 +402,17 @@ Legal Disclaimer: ${clientMetadata.legalDisclaimer}`;
 
       default:
         return "#f7ffeb"; // Fallback color
+=======
+        return "#f7ffeb";
+      case "summarize":
+        return "#e7f4ff";
+      case "generate-bullet-points":
+        return "#f3e7ff";
+      case "draft-summary":
+        return "#fffbe7";
+      default:
+        return "#f7ffeb";
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
     }
   }
 
@@ -593,6 +677,7 @@ ${sanitizedAI}
   }
 
   /********************************************************
+<<<<<<< HEAD
    * ==========  Add Event Listener for .ics Download ======
    ********************************************************/
 
@@ -602,6 +687,8 @@ ${sanitizedAI}
   }
 
   /********************************************************
+=======
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
    * ============  File Upload Event Listeners  ===========
    ********************************************************/
   function showUploadIndicator(fname) {
@@ -775,11 +862,19 @@ ${sanitizedAI}
     timeDiv.textContent = `Sent on: ${formatTimestamp(chat.time)}`;
     timeDiv.style.color = "#9d9d9d";
 
+<<<<<<< HEAD
     // Download Chat Button
     const dlBtn = document.createElement("button");
     dlBtn.className = "download-chat";
     dlBtn.textContent = "Download Chat";
     dlBtn.style.marginTop = "5px";
+=======
+    // Download Button
+    const dlBtn = document.createElement("button");
+    dlBtn.className = "download-chat";
+    dlBtn.textContent = "Download Chat";
+    dlBtn.style.marginTop = "10px";
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
     dlBtn.style.backgroundColor = getBackgroundColor(action);
     dlBtn.style.border = "1px solid #0000001a";
     dlBtn.style.color = "#333";
@@ -791,11 +886,19 @@ ${sanitizedAI}
     dlBtn.style.cursor = "pointer";
     dlBtn.addEventListener("click", () => downloadChat(chat));
 
+<<<<<<< HEAD
     // Delete Chat Button
     const delBtn = document.createElement("button");
     delBtn.className = "delete-chat";
     delBtn.textContent = "Delete Chat";
     delBtn.style.marginTop = "5px";
+=======
+    // Delete Button
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-chat";
+    delBtn.textContent = "Delete Chat";
+    delBtn.style.marginTop = "10px";
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
     delBtn.style.backgroundColor = getBackgroundColor(action);
     delBtn.style.border = "1px solid #0000001a";
     delBtn.style.color = "#333";
@@ -812,6 +915,7 @@ ${sanitizedAI}
       if (confirm("Delete this chat?")) deleteChat(cid);
     });
 
+<<<<<<< HEAD
     // ICS Download Button
     const icsBtn = document.createElement("button");
     icsBtn.className = "download-chat";
@@ -856,6 +960,16 @@ ${sanitizedAI}
 
     // Append the button container to the chat message
     cMsg.appendChild(btnWrap);
+=======
+    // Buttons Container
+    const btnWrap = document.createElement("div");
+    btnWrap.style.display = "flex";
+    btnWrap.style.justifyContent = "flex-start";
+    btnWrap.style.alignItems = "center";
+    btnWrap.style.marginTop = "10px";
+    btnWrap.appendChild(dlBtn);
+    btnWrap.appendChild(delBtn);
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
 
     // Assemble Chat Message
     cMsg.appendChild(userDiv);

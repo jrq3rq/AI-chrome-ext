@@ -42,7 +42,10 @@ grok-api-interaction-database/
 │ ├── clientMetadata.js # Centralized metadata file for client-specific information (unchanged)
 │ ├── ai-service.js # Wrapper for AI interactions (unchanged)
 │ ├── storage-handler.js # Manages Firestore-based storage (modified to replace local storage)
+<<<<<<< HEAD
 │ ├── calendar-util.js # Function for generating .ics files in a separate module
+=======
+>>>>>>> 8d171f04684fe3fb1a69fbb119918ad707844fdd
 │ └── summarization-service.js
 ├── templates/ # Templates for UI components and default logic (unchanged)
 │ ├── popup.js # Frontend JS for Chrome extension popup
