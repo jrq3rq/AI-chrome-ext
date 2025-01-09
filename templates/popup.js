@@ -71,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // **NEW**: Removes unwanted Markdown but **preserves** bullet points or special formatting for downloads
-
   function sanitizeForDownload(text) {
     return text
       .replace(/[*#]/g, "") // Remove Markdown-like formatting
@@ -81,10 +80,17 @@ document.addEventListener("DOMContentLoaded", () => {
       .trim(); // Remove extra spaces at the start and end
   }
 
-  function formatAndTruncateResponse(message, sentenceLimit = 4) {
-    const cleaned = cleanResponse(message); // Clean unwanted characters
+  /**
+   * Formats the AI response by splitting it into paragraphs and adding spacing.
+   * @param {string} message - The AI response message.
+   * @param {number} [paragraphLimit] - Optional limit to the number of paragraphs to display initially.
+   * @returns {HTMLElement} - The formatted response container.
+   */
 
-    // Split text into sentences using punctuation as delimiters
+  function formatAndTruncateResponse(message, sentenceLimit = 4) {
+    const cleaned = cleanResponse(message); // Remove unwanted characters
+
+    // Split text into sentences
     const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [cleaned]; // Split into sentences or fallback to full text
 
     const wrapper = document.createElement("div");
@@ -99,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     truncatedP.textContent = truncatedSentences.join(" ");
     wrapper.appendChild(truncatedP);
 
-    // Add "Show More" logic for remaining sentences
+    // Add "Show More/Less" logic for remaining sentences
     if (remainingSentences.length > 0) {
       const fullDiv = document.createElement("div");
       fullDiv.className = "full-response";
@@ -112,6 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
       toggle.className = "show-more-link";
       toggle.style.color = "blue";
       toggle.style.cursor = "pointer";
+      toggle.style.fontWeight = "normal"; // Ensures text is not bold
       toggle.addEventListener("click", () => {
         if (fullDiv.style.display === "none") {
           fullDiv.style.display = "inline"; // Show the full text
@@ -130,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return wrapper;
   }
 
-  // Shows AI text in the UI
   function displayResponse(msg) {
     const div = document.querySelector(".formatted-response");
     div.innerHTML = "";
@@ -372,6 +378,39 @@ Legal Disclaimer: ${clientMetadata.legalDisclaimer}`;
       return null;
     }
   }
+
+  // Function to display AI response in a readable format
+  function displayAIResponse(message) {
+    // Select the response container
+    const responseDiv = document.querySelector(".formatted-response");
+
+    // Clear any existing content
+    responseDiv.innerHTML = "";
+
+    // Apply dynamic styling (you can skip this if using CSS classes)
+    responseDiv.style.fontSize = "14px";
+    responseDiv.style.lineHeight = "1.6";
+    responseDiv.style.fontFamily = "'Verdana', sans-serif";
+    responseDiv.style.color = "#333";
+    responseDiv.style.marginTop = "10px";
+
+    // Create a container for the message
+    const messageWrapper = document.createElement("div");
+    messageWrapper.style.padding = "10px";
+    messageWrapper.style.border = "1px solid #ccc";
+    messageWrapper.style.borderRadius = "8px";
+    messageWrapper.style.backgroundColor = "#f9f9f9";
+
+    // Insert the AI message
+    messageWrapper.textContent = message;
+
+    // Append the message to the response container
+    responseDiv.appendChild(messageWrapper);
+  }
+
+  // Simulate displaying an AI response
+  // const testMessage = "This is a dynamically formatted AI response for testing purposes.";
+  // displayAIResponse(testMessage);
 
   /********************************************************
    * ============  Element References  =====================

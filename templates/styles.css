@@ -41,6 +41,74 @@ button {
   gap: 10px; /* Space between buttons */
 }
 
+/* Add this to your styles.css */
+/* Styles for formatted paragraphs */
+.formatted-response p {
+  word-break: break-word; /* Breaks words at arbitrary points to prevent overflow */
+  margin-bottom: 10px; /* Adds 10px space between paragraphs */
+  line-height: 1.6;
+  font-family: "Verdana", sans-serif;
+  color: #333;
+}
+
+/* Styles for the "Show More/Less" toggle */
+.show-more-link {
+  color: blue;
+  cursor: pointer;
+  font-weight: normal;
+  text-decoration: underline;
+}
+
+/* Optional: Hover effect for the toggle */
+.show-more-link:hover {
+  color: darkblue;
+}
+
+/* Styles for the full response */
+.full-response {
+  margin-top: 10px;
+}
+
+/* Style for formatted paragraphs */
+.formatted-response-content p {
+  margin-bottom: 10px; /* Adds 10px space between paragraphs */
+  line-height: 1.6;
+  font-family: "Verdana", sans-serif;
+  color: #333;
+}
+
+/* Ensures paragraphs inside the full response also have consistent spacing */
+.formatted-response-content .full-response p {
+  margin-bottom: 10px;
+}
+
+/* Optional: Style for the chat messages */
+.chat-message {
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+/* Optional: Style for buttons within chat messages */
+.btn-wrap button {
+  margin-right: 10px;
+}
+
+.formatted-response {
+  overflow-wrap: break-word; /* Allows long words to break and wrap */
+  font-family: Arial, sans-serif;
+  line-height: 1.3;
+}
+
+.formatted-response ul,
+.formatted-response ol {
+  margin: 10px 20px;
+}
+
+.formatted-response li {
+  margin: 5px 0;
+}
+
 .full-width-btn {
   width: 100%; /* Full width for the bottom button */
   text-align: center; /* Center-align text */
@@ -303,16 +371,6 @@ button:active {
 
 .chat-history::-webkit-scrollbar-thumb:hover {
   background: #555;
-}
-
-.chat-message {
-  margin: 10px;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border: 1px solid #0000001a;
-  max-width: 100%; /* Ensures messages don't exceed the container's width */
-  word-wrap: break-word; /* Breaks long words to prevent horizontal overflow */
 }
 
 .chat-message:last-child {
