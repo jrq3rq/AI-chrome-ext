@@ -39,10 +39,8 @@ grok-api-interaction-database/
 │ │ │ └── styles.css
 │ │ └── custom.js # Optional client-specific customization logic
 ├── core/ # Modular core for shared, reusable logic
-│ ├── firebaseConfig.js
 │ ├── clientMetadata.js # Centralized metadata file for client-specific information (unchanged)
 │ ├── ai-service.js # Wrapper for AI interactions (unchanged)
-│ ├── storage-handler.js # Manages Firestore-based storage (modified to replace local storage)
 │ ├── calendar-util.js # Function for generating .ics files in a separate module
 │ └── summarization-service.js
 ├── templates/ # Templates for UI components and default logic (unchanged)
@@ -72,8 +70,8 @@ grok-api-interaction-database/
 │ - displayMetadata(metadata)                        │
 │ - userRequestsMetadata(input)                      │
 │ - processInput(action, userInput)                  │
-│ - saveChatMessageToFirestore(message)              │
-│ - loadChatHistoryFromFirestore()                   │
+│ - saveChatMessageToLocalStorage(message)           │
+│ - loadChatHistoryFromLocalStorage()                │
 └────────────────────────────────────────────────────┘
                     │
                     ▼
@@ -81,13 +79,13 @@ grok-api-interaction-database/
 │ 2. Element References and Event Listeners          │
 │ - saveAllChatsButton, overlay triggers             │
 │ - fileInput, sendButton, clearHistoryButton, etc.  │
-│ - Hook Firestore methods to appropriate events     │
+│ - Hook LocalStorage methods to appropriate events  │
 └────────────────────────────────────────────────────┘
                     │
                     ▼
 ┌────────────────────────────────────────────────────┐
-│ 3. loadChatHistoryFromFirestore() at Startup       │
-│ - Fetch saved history from Firestore               │
+│ 3. loadChatHistoryFromLocalStorage() at Startup    │
+│ - Fetch saved history from LocalStorage            │
 │ - For each chat:                                   │
 │   - Build UI of chat message                       │
 │   - Prepend to chatHistoryDiv                      │
@@ -108,29 +106,29 @@ grok-api-interaction-database/
 │ 5. processInput(action, userInput):                │
 │ - If userRequestsMetadata(userInput):              │
 │ → displayMetadata()                                │
-│ → saveChatMessageToFirestore(metadata response)    │
+│ → saveChatMessageToLocalStorage(metadata response) │
 │                   Else:                            │
 │ (1) Build prompt with constructPrompt()            │
 │ (2) POST to /chat endpoint on server               │
 │ (3) Clean up AI response (remove prompt, etc)      │
 │ (4) displayResponse(finalAIResponse)               │
-│ (5) saveChatMessageToFirestore(AI response)        │
-│ (6) loadChatHistoryFromFirestore()                 │
+│ (5) saveChatMessageToLocalStorage(AI response)     │
+│ (6) loadChatHistoryFromLocalStorage()              │
 └────────────────────────────────────────────────────┘
                     │
                     ▼
 ┌────────────────────────────────────────────────────┐
-│ 6. saveChatMessageToFirestore(message):            │
+│ 6. saveChatMessageToLocalStorage(message):         │
 │ - Clean + format data                              │
 │ - Generate timestamp                               │
-│ - Push chat message to Firestore as a document     │
+│ - Save chat message to chrome.storage.local        │
 │ - Trigger UI updates for chat history              │
 └────────────────────────────────────────────────────┘
                     │
                     ▼
 ┌────────────────────────────────────────────────────┐
-│ 7. loadChatHistoryFromFirestore():                 │
-│ - Fetch chat data from Firestore                   │
+│ 7. loadChatHistoryFromLocalStorage():              │
+│ - Retrieve chat data from chrome.storage.local     │
 │ - Rebuild UI from retrieved messages               │
 │ - Attach "Download Chat" & "Delete Chat" buttons   │
 │ - Optionally limit to the latest 10 messages       │
@@ -139,7 +137,7 @@ grok-api-interaction-database/
                     ▼
 ┌────────────────────────────────────────────────────┐
 │ 8. UI: Clear Chat, Save All Chats, Overlays, etc.  │
-│ - Clear Chats: Deletes messages from Firestore     │
+│ - Clear Chats: Deletes messages from LocalStorage  │
 │ - Save All Chats: Fetches and downloads all chats  │
 │ - Update overlays and button states dynamically    │
 └────────────────────────────────────────────────────┘
