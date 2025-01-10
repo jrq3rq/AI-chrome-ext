@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "AI Chatbot + DB",
+  "name": "AI Chatbot + uStorage",
   "version": "2.0",
   "description": "Interactive AI chatbot extension for personalized conversations, chat history management, and streamlined user interactions.",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "storage", "unlimitedStorage"],
   "host_permissions": ["http://localhost:3000/*"],
   "action": {
     "default_popup": "index.html",

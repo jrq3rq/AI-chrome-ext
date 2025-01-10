@@ -39,6 +39,7 @@ grok-api-interaction-database/
 │ │ │ └── styles.css
 │ │ └── custom.js # Optional client-specific customization logic
 ├── core/ # Modular core for shared, reusable logic
+│ ├── firebaseConfig.js
 │ ├── clientMetadata.js # Centralized metadata file for client-specific information (unchanged)
 │ ├── ai-service.js # Wrapper for AI interactions (unchanged)
 │ ├── storage-handler.js # Manages Firestore-based storage (modified to replace local storage)
