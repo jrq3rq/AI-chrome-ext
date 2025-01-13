@@ -5,6 +5,20 @@ document.addEventListener("DOMContentLoaded", () => {
   /********************************************************
    * ============  Utility Functions  ======================
    ********************************************************/
+  // **NEW FILTERING CODE STARTS HERE**
+
+  // Retrieve the filter dropdown element
+  const filterDropdown = document.getElementById("filter-dropdown");
+
+  // Update loadChatHistory to accept an optional filter parameter (see Step 3)
+  // Listen for changes in the filter dropdown
+  filterDropdown.addEventListener("change", () => {
+    const selectedFilter = filterDropdown.value;
+    loadChatHistory(selectedFilter); // Reload chats with the selected filter
+  });
+
+  // **NEW FILTERING CODE ENDS HERE**
+
   function handleICSDownload() {
     const eventDetails = {
       title: "Sample Event Title", // Replace or make dynamic
@@ -759,9 +773,16 @@ ${sanitizedAI}
   /********************************************************
    * ============  Load & Display Chat History  ===========
    ********************************************************/
-  function loadChatHistory() {
+
+  function loadChatHistory(filterType = "all") {
     let saved = JSON.parse(localStorage.getItem("chatHistory")) || [];
     saved = saved.slice().reverse();
+
+    // Filter the saved chats if a filter other than "all" is selected.
+    if (filterType !== "all") {
+      saved = saved.filter((chat) => chat.action === filterType);
+    }
+
     chatHistoryDiv.innerHTML = "";
     saved.forEach((chat) => {
       appendChatMessage(chat);
