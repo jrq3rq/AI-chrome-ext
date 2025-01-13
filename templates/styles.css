@@ -41,6 +41,33 @@ button {
   gap: 10px; /* Space between buttons */
 }
 
+.formatted-response div {
+  margin-bottom: 10px; /* Space between lines */
+  word-wrap: break-word; /* Handle long lines */
+}
+
+.formatted-response div:nth-child(even) {
+  background-color: #f9f9f9; /* Optional alternating row color */
+}
+
+.formatted-response div:nth-child(odd) {
+  background-color: #ffffff; /* Optional alternating row color */
+}
+
+.formatted-response div::before {
+  content: ""; /* Reset any default list styling */
+}
+
+.formatted-response div.numbered {
+  font-weight: bold;
+  color: #4caf50; /* Optional color for numbered items */
+}
+
+.formatted-response div.unordered {
+  font-weight: bold;
+  color: #333; /* Optional color for unordered items */
+}
+
 /* Add this to your styles.css */
 /* Styles for formatted paragraphs */
 .formatted-response p {

@@ -52,23 +52,59 @@ document.addEventListener("DOMContentLoaded", () => {
     const sanitizedInput = cleanResponse(userInput); // Sanitize input
     switch (action) {
       case "chat":
-        return `Paralegal Mode: ${sanitizedInput}`;
+        return `Chat mode: ${sanitizedInput}`;
+      // return `Paralegal Mode: ${sanitizedInput}`;
       case "summarize":
-        return `Summarize the following content in the least amount of words but don't leave out any important information: \n\n${userInput}`;
+        return `Provide a concise and comprehensive legal summary of the following content, ensuring no critical detail is overlooked:\n\n${sanitizedInput}`;
+      // return `Summarize the following content in the least amount of words but don't leave out any important information: \n\n${sanitizedInput}`;
       case "generate-bullet-points":
-        return `Convert to bullet points:\n\n${sanitizedInput}`;
+        return `Convert the legal document content below into clear bullet points that highlight the key issues, rulings, and actions:\n\n${sanitizedInput}`;
       case "draft-summary":
-        return `Draft a summary:\n\n${sanitizedInput}`;
+        return `Draft an executive legal summary that distills the main legal arguments and recommendations from the following content, ensuring clarity and precision:\n\n${sanitizedInput}`;
 
       // New paralegal-related cases:
       case "document-preparation":
-        return `Assist with document preparation, including formatting and reviewing:\n\n${sanitizedInput}`;
+        return `Assist with document preparation, including formatting and reviewing:\n\n${sanitizedInput}
+
+        - **Document Type:** Motion for Summary Judgment
+        - **Jurisdiction:** Washington State
+        - **Case Details:** Smith vs. Jones (Case No. 25-67890)
+        - **Content:** Draft a motion based on the provided facts, ensuring it adheres to local rules for formatting, includes all necessary legal citations, and reviews for logical structure and clarity.
+        - **Review for:** Compliance with Washington State court rules, accuracy of legal arguments, and any potential weaknesses or areas for improvement.`;
+
       case "legal-research":
-        return `Conduct thorough legal research on the following topic:\n\n${sanitizedInput}`;
+        return `Conduct thorough legal research on the following topic:\n\n${sanitizedInput}
+
+        - **Topic:** Recent developments in Washington State law regarding employment discrimination based on sexual orientation.
+        - **Scope:** Focus on legislation passed in the last 3 years, along with any significant court rulings or administrative decisions.
+        - **Focus:** Identify changes in legal standards, key cases that set precedents, and any emerging trends in case law or legislative intent.
+        - **Output:** Provide a detailed report with summaries of key findings, including full citations and brief analyses of how these developments might affect current case strategies.`;
+
       case "case-management":
-        return `Assist with case management tasks, including tracking deadlines and organizing files:\n\n${sanitizedInput}`;
+        return `Assist with case management tasks, including tracking deadlines and organizing files:\n\n${sanitizedInput}
+
+        - **Location:** Seattle Office
+        - **Task:** Organize and update the case management system for all active personal injury cases.
+        - **Details to Include:**
+          - Case name, number, and client information
+          - Current status of each case
+          - List all upcoming deadlines for pleadings, discovery, mediation, and trial dates
+          - Highlight cases with critical upcoming actions or potential settlement discussions
+        - **Additional:** Flag any cases requiring immediate attention due to missed deadlines or new developments, and suggest next steps for each.`;
+
       case "client-interaction":
-        return `Provide assistance with client interaction tasks. Prepare the following:\n\n${sanitizedInput}`;
+        return `Provide assistance with client interaction tasks. Prepare the following:\n\n${sanitizedInput}
+
+        - **Client:** Mr. Robert Harris
+        - **Case Reference:** Harris vs. Downtown Developers Inc. (Case No. 25-11122)
+        - **Recent Development:** Settlement offer received from the opposing party
+        - **Purpose:** Draft a detailed email to discuss the settlement offer.
+        - **Content:**
+          - Explain the terms of the settlement offer in layman's terms.
+          - Outline the pros and cons of accepting vs. continuing litigation.
+          - Request feedback or a decision from the client on how to proceed.
+          - Remind the client of the response deadline and the importance of timely decision-making.
+        - **Tone:** Clear, informative, and considerate, aiming to guide the client through the decision-making process while respecting their autonomy.`;
 
       default:
         throw new Error("Invalid action selected.");
@@ -101,49 +137,110 @@ document.addEventListener("DOMContentLoaded", () => {
    * @returns {HTMLElement} - The formatted response container.
    */
 
-  function formatAndTruncateResponse(message, sentenceLimit = 4) {
-    const cleaned = cleanResponse(message); // Remove unwanted characters
+  // Utility to remove common Markdown markers (*, **, ``, etc.)
+  function removeMarkdown(str) {
+    // Extract numbers from the string
+    const matches = str.match(/\d+\.\s/g) || [];
+    let textWithoutNumbers = str.replace(/\d+\.\s/g, "");
 
-    // Split text into sentences
-    const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [cleaned]; // Split into sentences or fallback to full text
+    // Remove all other Markdown syntax
+    textWithoutNumbers = textWithoutNumbers
+      .replace(/[*#]/g, "") // Remove asterisks and hashes
+      .replace(/\*{1,3}(.*?)\*{1,3}/g, "$1") // Remove bold, italic, and bold-italic
+      .replace(/__([^_]+)__/g, "$1") // Another way to do bold
+      .replace(/_(.*?)_/g, "$1") // Another way to do italic
+      .replace(/`(.*?)`/g, "$1") // Inline code
+      .replace(/~~(.*?)~~/g, "$1") // Strikethrough
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Links
+      .replace(/^- /gm, "") // Bullet points
+      .replace(/```[\s\S]*?```/g, "") // Code blocks
+      .replace(/<\/?[^>]+(>|$)/g, "") // HTML tags, if any were included
+      .replace(/\n\s*\n/g, "\n") // Double newlines
+      .trim();
+
+    // Reinsert numbers in sequential order
+    let result = "";
+    let counter = 1;
+    let numberIndex = 0; // To keep track of where we are in the matches array
+
+    // Split text into lines for easier processing
+    const lines = textWithoutNumbers.split("\n");
+    result = lines
+      .map((line, index) => {
+        if (
+          matches[numberIndex] &&
+          line.trim().startsWith(matches[numberIndex].trim())
+        ) {
+          const numberedLine = `${counter}. ${line.replace(
+            matches[numberIndex],
+            ""
+          )}`;
+          counter++;
+          numberIndex++;
+          return numberedLine;
+        }
+        return line;
+      })
+      .join("\n");
+
+    return result.trim();
+  }
+
+  function formatAndTruncateResponse(message, sentenceLimit = 4) {
+    // Remove Markdown, now with sequential number ordering
+    const noMarkdown = removeMarkdown(message);
+
+    // Clean out extra whitespace and normalize
+    const cleaned = noMarkdown.replace(/\s+/g, " ").trim();
+
+    // Process the text to ensure numbers are in order
+    const processedText = cleaned.replace(/(\d+\.)\s/g, (match, num) => {
+      return `${parseInt(num, 10)}. `;
+    });
+
+    // Split into sentences or lines if sentences don't work
+    const sentences =
+      processedText.match(/[^.!?]+[.!?]+/g) ||
+      processedText
+        .split("\n")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
 
     const wrapper = document.createElement("div");
     wrapper.className = "formatted-response";
 
-    // Limit to the first `sentenceLimit` sentences
+    // Truncate based on sentenceLimit
     const truncatedSentences = sentences.slice(0, sentenceLimit);
     const remainingSentences = sentences.slice(sentenceLimit);
 
-    // Create the truncated paragraph
+    // Create truncated paragraph
     const truncatedP = document.createElement("p");
     truncatedP.textContent = truncatedSentences.join(" ");
     wrapper.appendChild(truncatedP);
 
-    // Add "Show More/Less" logic for remaining sentences
+    // Show More/Less logic
     if (remainingSentences.length > 0) {
       const fullDiv = document.createElement("div");
       fullDiv.className = "full-response";
-      fullDiv.style.display = "none"; // Hidden initially
+      fullDiv.style.display = "none";
       fullDiv.textContent = remainingSentences.join(" ");
 
-      // Create the "Show More" toggle
       const toggle = document.createElement("span");
       toggle.textContent = " Show More...";
       toggle.className = "show-more-link";
       toggle.style.color = "blue";
       toggle.style.cursor = "pointer";
-      toggle.style.fontWeight = "normal"; // Ensures text is not bold
+      toggle.style.fontWeight = "normal";
       toggle.addEventListener("click", () => {
         if (fullDiv.style.display === "none") {
-          fullDiv.style.display = "inline"; // Show the full text
+          fullDiv.style.display = "block";
           toggle.textContent = " Show Less...";
         } else {
-          fullDiv.style.display = "none"; // Hide the full text
+          fullDiv.style.display = "none";
           toggle.textContent = " Show More...";
         }
       });
 
-      // Append the full text and toggle to the wrapper
       wrapper.appendChild(fullDiv);
       wrapper.appendChild(toggle);
     }
@@ -152,9 +249,37 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function displayResponse(msg) {
-    const div = document.querySelector(".formatted-response");
-    div.innerHTML = "";
-    div.appendChild(formatAndTruncateResponse(sanitizeText(msg)));
+    const responseDiv = document.querySelector(".formatted-response");
+
+    // Clear any existing content
+    responseDiv.innerHTML = "";
+
+    // Apply styles dynamically
+    responseDiv.style.fontSize = "14px";
+    responseDiv.style.lineHeight = "1.6";
+    responseDiv.style.fontFamily = "'Verdana', sans-serif";
+    responseDiv.style.color = "#333";
+    responseDiv.style.marginTop = "10px";
+
+    // Split the message into lines for special formatting
+    const lines = msg
+      .split(/\n+/) // Split by newlines
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0); // Remove empty lines
+
+    // Iterate over each line and handle formatting
+    lines.forEach((line) => {
+      const lineWrapper = document.createElement("div");
+
+      // Check if the line is a numbered item or unordered list
+      if (/^\d+\.\s/.test(line) || /^-\s/.test(line)) {
+        lineWrapper.style.marginBottom = "10px"; // Add spacing
+        lineWrapper.style.fontWeight = "bold"; // Optional bold for emphasis
+      }
+
+      lineWrapper.textContent = line; // Set the line content
+      responseDiv.appendChild(lineWrapper);
+    });
   }
 
   // Shows metadata in the UI
@@ -393,35 +518,6 @@ Legal Disclaimer: ${clientMetadata.legalDisclaimer}`;
     }
   }
 
-  // Function to display AI response in a readable format
-  function displayAIResponse(message) {
-    // Select the response container
-    const responseDiv = document.querySelector(".formatted-response");
-
-    // Clear any existing content
-    responseDiv.innerHTML = "";
-
-    // Apply dynamic styling (you can skip this if using CSS classes)
-    responseDiv.style.fontSize = "14px";
-    responseDiv.style.lineHeight = "1.6";
-    responseDiv.style.fontFamily = "'Verdana', sans-serif";
-    responseDiv.style.color = "#333";
-    responseDiv.style.marginTop = "10px";
-
-    // Create a container for the message
-    const messageWrapper = document.createElement("div");
-    messageWrapper.style.padding = "10px";
-    messageWrapper.style.border = "1px solid #ccc";
-    messageWrapper.style.borderRadius = "8px";
-    messageWrapper.style.backgroundColor = "#f9f9f9";
-
-    // Insert the AI message
-    messageWrapper.textContent = message;
-
-    // Append the message to the response container
-    responseDiv.appendChild(messageWrapper);
-  }
-
   // Simulate displaying an AI response
   // const testMessage = "This is a dynamically formatted AI response for testing purposes.";
   // displayAIResponse(testMessage);
@@ -598,30 +694,108 @@ ${sanitizedAI}
     );
   }
 
+  // function saveChatHistory(userMessage, aiResponse, action) {
+  //   // Skip saving metadata requests
+  //   if (userRequestsMetadata(userMessage)) {
+  //     console.log("Metadata request detected. Not saving to chat history.");
+  //     return null;
+  //   }
+  //   const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+  //   const timestamp = new Date().toISOString();
+
+  //   // No more removing first sentence. Keep them intact.
+  //   const cleanedUserMessage = userMessage.trim();
+  //   const cleanedAIResponse = aiResponse.trim();
+
+  //   const finalUserMessage = removeAILabel(cleanedUserMessage);
+  //   const finalAIResponse = removeAILabel(cleanedAIResponse);
+
+  //   const chatHash = base64EncodeUnicode(
+  //     `${finalUserMessage}_${finalAIResponse}_${action}`
+  //   );
+
+  //   const newChat = {
+  //     id: generateUniqueId(),
+  //     user: finalUserMessage,
+  //     ai: finalAIResponse,
+  //     action: action,
+  //     time: timestamp,
+  //     hash: chatHash,
+  //   };
+
+  //   chatHistory.unshift(newChat);
+
+  //   if (chatHistory.length > 10) {
+  //     chatHistory.pop();
+  //   }
+
+  //   try {
+  //     localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+  //     console.log("Chat history saved successfully:", chatHistory);
+  //     updateChatHistoryVisibility();
+  //     return newChat;
+  //   } catch (error) {
+  //     console.error("Error saving chat history:", error);
+  //     alert("An error occurred while saving the chat history.");
+  //     return null;
+  //   }
+  // }
+
+  function stripHtmlTags(str) {
+    // Remove anything that looks like an HTML tag
+    return str.replace(/<[^>]*>/g, "");
+  }
+
+  function formatResponseForHistory(response) {
+    return response
+      .split(/\n+/) // Split by newlines
+      .map((line) => {
+        if (/^\d+\.\s/.test(line)) {
+          // Numbered item
+          return `<strong>${line}</strong>`;
+        } else if (/^-\s/.test(line)) {
+          // Unordered list item
+          return `<em>${line}</em>`;
+        } else {
+          // Regular text
+          return line;
+        }
+      })
+      .join("<br>"); // Join with line breaks
+  }
+
   function saveChatHistory(userMessage, aiResponse, action) {
     // Skip saving metadata requests
     if (userRequestsMetadata(userMessage)) {
       console.log("Metadata request detected. Not saving to chat history.");
       return null;
     }
+
     const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
     const timestamp = new Date().toISOString();
 
-    // No more removing first sentence. Keep them intact.
+    // Clean user input and AI response
     const cleanedUserMessage = userMessage.trim();
     const cleanedAIResponse = aiResponse.trim();
 
     const finalUserMessage = removeAILabel(cleanedUserMessage);
     const finalAIResponse = removeAILabel(cleanedAIResponse);
 
+    // Format AI response for consistent styling
+    const formattedResponse = formatResponseForHistory(finalAIResponse);
+
+    // Strip out HTML tags so the data has no <br> or <strong>, etc.
+    const strippedAI = stripHtmlTags(finalAIResponse);
+
     const chatHash = base64EncodeUnicode(
-      `${finalUserMessage}_${finalAIResponse}_${action}`
+      `${finalUserMessage}_${strippedAI}_${action}`
     );
 
     const newChat = {
       id: generateUniqueId(),
       user: finalUserMessage,
-      ai: finalAIResponse,
+      ai: strippedAI, // Store the formatted response
+      rawAI: finalAIResponse, // Store raw response for fallback
       action: action,
       time: timestamp,
       hash: chatHash,
@@ -808,6 +982,124 @@ ${sanitizedAI}
    * Appends a single chat message to the chat history UI.
    * @param {Object|null} chat - The chat object to append. If null, do nothing.
    */
+  // function appendChatMessage(chat) {
+  //   if (!chat) return;
+
+  //   const action = chat.action || "chat";
+  //   const cMsg = document.createElement("div");
+  //   cMsg.className = "chat-message";
+  //   cMsg.style.backgroundColor = getBackgroundColor(action);
+  //   cMsg.classList.add(action);
+
+  //   // User div
+  //   const userDiv = document.createElement("div");
+  //   userDiv.className = "user";
+  //   userDiv.innerHTML = `<strong>User (${action.toUpperCase()}):</strong>`;
+  //   userDiv.appendChild(formatAndTruncateResponse(chat.user));
+
+  //   // AI div
+  //   const aiDiv = document.createElement("div");
+  //   aiDiv.className = "ai";
+  //   aiDiv.innerHTML = `<strong>Enhancer AI:</strong>`;
+  //   aiDiv.appendChild(formatAndTruncateResponse(chat.ai));
+
+  //   // Timestamp
+  //   const timeDiv = document.createElement("div");
+  //   timeDiv.className = "timestamp";
+  //   timeDiv.textContent = `Sent on: ${formatTimestamp(chat.time)}`;
+  //   timeDiv.style.color = "#9d9d9d";
+
+  //   // Download Chat Button
+  //   const dlBtn = document.createElement("button");
+  //   dlBtn.className = "download-chat";
+  //   dlBtn.textContent = "Download Chat";
+  //   dlBtn.style.marginTop = "5px";
+  //   dlBtn.style.backgroundColor = getBackgroundColor(action);
+  //   dlBtn.style.border = "1px solid #0000001a";
+  //   dlBtn.style.color = "#333";
+  //   dlBtn.style.padding = "10px";
+  //   dlBtn.style.borderRadius = "5px";
+  //   dlBtn.style.fontSize = "10px";
+  //   dlBtn.style.textTransform = "uppercase";
+  //   dlBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
+  //   dlBtn.style.cursor = "pointer";
+  //   dlBtn.addEventListener("click", () => downloadChat(chat));
+
+  //   // Delete Chat Button
+  //   const delBtn = document.createElement("button");
+  //   delBtn.className = "delete-chat";
+  //   delBtn.textContent = "Delete Chat";
+  //   delBtn.style.marginTop = "5px";
+  //   delBtn.style.backgroundColor = getBackgroundColor(action);
+  //   delBtn.style.border = "1px solid #0000001a";
+  //   delBtn.style.color = "#333";
+  //   delBtn.style.padding = "10px";
+  //   delBtn.style.borderRadius = "5px";
+  //   delBtn.style.fontSize = "10px";
+  //   delBtn.style.textTransform = "uppercase";
+  //   delBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
+  //   delBtn.style.cursor = "pointer";
+  //   delBtn.style.marginLeft = "10px";
+  //   delBtn.setAttribute("data-chat-id", chat.id);
+  //   delBtn.addEventListener("click", (ev) => {
+  //     const cid = ev.target.getAttribute("data-chat-id");
+  //     if (confirm("Delete this chat?")) deleteChat(cid);
+  //   });
+
+  //   // ICS Download Button
+  //   const icsBtn = document.createElement("button");
+  //   icsBtn.className = "download-chat";
+  //   icsBtn.textContent = "Download Event (.ics)";
+  //   icsBtn.style.marginTop = "5px";
+  //   icsBtn.style.backgroundColor = getBackgroundColor(action);
+  //   icsBtn.style.border = "1px solid #0000001a";
+  //   icsBtn.style.color = "#333";
+  //   icsBtn.style.padding = "10px";
+  //   icsBtn.style.borderRadius = "5px";
+  //   icsBtn.style.fontSize = "10px";
+  //   icsBtn.style.textTransform = "uppercase";
+  //   icsBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
+  //   icsBtn.style.cursor = "pointer";
+  //   icsBtn.addEventListener("click", () => {
+  //     const eventDetails = {
+  //       title: `Chat with ${chat.user}`, // Replace with dynamic content
+  //       description: `AI Response: ${chat.ai}`, // Replace with dynamic content
+  //       location: "Online", // Optional: add a meaningful location
+  //       startDate: new Date(), // Replace with an appropriate timestamp
+  //       endDate: new Date(new Date().getTime() + 60 * 60 * 1000), // Example: 1-hour duration
+  //     };
+  //     generateICSFile(eventDetails);
+  //   });
+
+  //   // Buttons Container
+  //   const btnWrap = document.createElement("div");
+  //   btnWrap.className = "btn-wrap";
+
+  //   // Horizontal row for "Download Chat" and "Delete Chat"
+  //   const btnRow = document.createElement("div");
+  //   btnRow.className = "btn-row";
+  //   btnRow.appendChild(dlBtn); // Add "Download Chat" button
+  //   btnRow.appendChild(delBtn); // Add "Delete Chat" button
+
+  //   // Style the full-width "Download Event (.ICS)" button
+  //   icsBtn.className = "full-width-btn";
+
+  //   // Add the rows to the button container
+  //   btnWrap.appendChild(btnRow);
+  //   btnWrap.appendChild(icsBtn);
+
+  //   // Append the button container to the chat message
+  //   cMsg.appendChild(btnWrap);
+
+  //   // Assemble Chat Message
+  //   cMsg.appendChild(userDiv);
+  //   cMsg.appendChild(aiDiv);
+  //   cMsg.appendChild(timeDiv);
+  //   cMsg.appendChild(btnWrap);
+
+  //   // Prepend to show latest chat at the top
+  //   chatHistoryDiv.prepend(cMsg);
+  // }
   function appendChatMessage(chat) {
     if (!chat) return;
 
@@ -817,25 +1109,29 @@ ${sanitizedAI}
     cMsg.style.backgroundColor = getBackgroundColor(action);
     cMsg.classList.add(action);
 
-    // User div
+    // === USER DIV ===
     const userDiv = document.createElement("div");
     userDiv.className = "user";
     userDiv.innerHTML = `<strong>User (${action.toUpperCase()}):</strong>`;
     userDiv.appendChild(formatAndTruncateResponse(chat.user));
+    // ^ Show More/Less for user text
 
-    // AI div
+    // === AI DIV ===
     const aiDiv = document.createElement("div");
     aiDiv.className = "ai";
     aiDiv.innerHTML = `<strong>Enhancer AI:</strong>`;
-    aiDiv.appendChild(formatAndTruncateResponse(chat.ai));
 
-    // Timestamp
+    // Apply Show More/Less for the AI text using the stripped version
+    const formattedAI = formatAndTruncateResponse(chat.ai);
+    aiDiv.appendChild(formattedAI);
+
+    // === TIMESTAMP ===
     const timeDiv = document.createElement("div");
     timeDiv.className = "timestamp";
     timeDiv.textContent = `Sent on: ${formatTimestamp(chat.time)}`;
     timeDiv.style.color = "#9d9d9d";
 
-    // Download Chat Button
+    // === DOWNLOAD CHAT BUTTON ===
     const dlBtn = document.createElement("button");
     dlBtn.className = "download-chat";
     dlBtn.textContent = "Download Chat";
@@ -851,7 +1147,7 @@ ${sanitizedAI}
     dlBtn.style.cursor = "pointer";
     dlBtn.addEventListener("click", () => downloadChat(chat));
 
-    // Delete Chat Button
+    // === DELETE CHAT BUTTON ===
     const delBtn = document.createElement("button");
     delBtn.className = "delete-chat";
     delBtn.textContent = "Delete Chat";
@@ -872,7 +1168,7 @@ ${sanitizedAI}
       if (confirm("Delete this chat?")) deleteChat(cid);
     });
 
-    // ICS Download Button
+    // === ICS DOWNLOAD BUTTON ===
     const icsBtn = document.createElement("button");
     icsBtn.className = "download-chat";
     icsBtn.textContent = "Download Event (.ics)";
@@ -888,42 +1184,36 @@ ${sanitizedAI}
     icsBtn.style.cursor = "pointer";
     icsBtn.addEventListener("click", () => {
       const eventDetails = {
-        title: `Chat with ${chat.user}`, // Replace with dynamic content
-        description: `AI Response: ${chat.ai}`, // Replace with dynamic content
-        location: "Online", // Optional: add a meaningful location
-        startDate: new Date(), // Replace with an appropriate timestamp
-        endDate: new Date(new Date().getTime() + 60 * 60 * 1000), // Example: 1-hour duration
+        title: `Chat with ${chat.user}`,
+        description: `AI Response: ${chat.ai}`,
+        location: "Online",
+        startDate: new Date(),
+        endDate: new Date(new Date().getTime() + 60 * 60 * 1000),
       };
       generateICSFile(eventDetails);
     });
 
-    // Buttons Container
+    // === BUTTONS CONTAINER ===
     const btnWrap = document.createElement("div");
     btnWrap.className = "btn-wrap";
 
-    // Horizontal row for "Download Chat" and "Delete Chat"
     const btnRow = document.createElement("div");
     btnRow.className = "btn-row";
-    btnRow.appendChild(dlBtn); // Add "Download Chat" button
-    btnRow.appendChild(delBtn); // Add "Delete Chat" button
+    btnRow.appendChild(dlBtn);
+    btnRow.appendChild(delBtn);
 
-    // Style the full-width "Download Event (.ICS)" button
     icsBtn.className = "full-width-btn";
 
-    // Add the rows to the button container
     btnWrap.appendChild(btnRow);
     btnWrap.appendChild(icsBtn);
 
-    // Append the button container to the chat message
-    cMsg.appendChild(btnWrap);
-
-    // Assemble Chat Message
+    // === ASSEMBLE CHAT MESSAGE ===
     cMsg.appendChild(userDiv);
     cMsg.appendChild(aiDiv);
     cMsg.appendChild(timeDiv);
     cMsg.appendChild(btnWrap);
 
-    // Prepend to show latest chat at the top
+    // Prepend the message to show the latest chat at the top
     chatHistoryDiv.prepend(cMsg);
   }
 
