@@ -1,5 +1,8 @@
 # Grok API Interaction
 
+<!-- ![Practice Area](clients/business-name/branding/practice_area.png) -->
+<img src="clients/business-name/branding/practice_area.png" alt="Logo" height="500" />
+
 **Grok API Interaction** is a modular platform for creating **bespoke Chrome extensions** powered by AI-based chat interfaces. Tailored toward client-specific workflows, this repository streamlines the development and deployment of customized AI-driven extensions for various industries and use cases.
 
 The architecture is designed for **reusability**, **scalability**, and **easy customization**, ensuring that developers can quickly adapt the core solution to suit different clients, branding guidelines, and feature sets.
