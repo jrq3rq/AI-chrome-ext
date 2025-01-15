@@ -982,124 +982,6 @@ ${sanitizedAI}
    * Appends a single chat message to the chat history UI.
    * @param {Object|null} chat - The chat object to append. If null, do nothing.
    */
-  // function appendChatMessage(chat) {
-  //   if (!chat) return;
-
-  //   const action = chat.action || "chat";
-  //   const cMsg = document.createElement("div");
-  //   cMsg.className = "chat-message";
-  //   cMsg.style.backgroundColor = getBackgroundColor(action);
-  //   cMsg.classList.add(action);
-
-  //   // User div
-  //   const userDiv = document.createElement("div");
-  //   userDiv.className = "user";
-  //   userDiv.innerHTML = `<strong>User (${action.toUpperCase()}):</strong>`;
-  //   userDiv.appendChild(formatAndTruncateResponse(chat.user));
-
-  //   // AI div
-  //   const aiDiv = document.createElement("div");
-  //   aiDiv.className = "ai";
-  //   aiDiv.innerHTML = `<strong>Enhancer AI:</strong>`;
-  //   aiDiv.appendChild(formatAndTruncateResponse(chat.ai));
-
-  //   // Timestamp
-  //   const timeDiv = document.createElement("div");
-  //   timeDiv.className = "timestamp";
-  //   timeDiv.textContent = `Sent on: ${formatTimestamp(chat.time)}`;
-  //   timeDiv.style.color = "#9d9d9d";
-
-  //   // Download Chat Button
-  //   const dlBtn = document.createElement("button");
-  //   dlBtn.className = "download-chat";
-  //   dlBtn.textContent = "Download Chat";
-  //   dlBtn.style.marginTop = "5px";
-  //   dlBtn.style.backgroundColor = getBackgroundColor(action);
-  //   dlBtn.style.border = "1px solid #0000001a";
-  //   dlBtn.style.color = "#333";
-  //   dlBtn.style.padding = "10px";
-  //   dlBtn.style.borderRadius = "5px";
-  //   dlBtn.style.fontSize = "10px";
-  //   dlBtn.style.textTransform = "uppercase";
-  //   dlBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
-  //   dlBtn.style.cursor = "pointer";
-  //   dlBtn.addEventListener("click", () => downloadChat(chat));
-
-  //   // Delete Chat Button
-  //   const delBtn = document.createElement("button");
-  //   delBtn.className = "delete-chat";
-  //   delBtn.textContent = "Delete Chat";
-  //   delBtn.style.marginTop = "5px";
-  //   delBtn.style.backgroundColor = getBackgroundColor(action);
-  //   delBtn.style.border = "1px solid #0000001a";
-  //   delBtn.style.color = "#333";
-  //   delBtn.style.padding = "10px";
-  //   delBtn.style.borderRadius = "5px";
-  //   delBtn.style.fontSize = "10px";
-  //   delBtn.style.textTransform = "uppercase";
-  //   delBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
-  //   delBtn.style.cursor = "pointer";
-  //   delBtn.style.marginLeft = "10px";
-  //   delBtn.setAttribute("data-chat-id", chat.id);
-  //   delBtn.addEventListener("click", (ev) => {
-  //     const cid = ev.target.getAttribute("data-chat-id");
-  //     if (confirm("Delete this chat?")) deleteChat(cid);
-  //   });
-
-  //   // ICS Download Button
-  //   const icsBtn = document.createElement("button");
-  //   icsBtn.className = "download-chat";
-  //   icsBtn.textContent = "Download Event (.ics)";
-  //   icsBtn.style.marginTop = "5px";
-  //   icsBtn.style.backgroundColor = getBackgroundColor(action);
-  //   icsBtn.style.border = "1px solid #0000001a";
-  //   icsBtn.style.color = "#333";
-  //   icsBtn.style.padding = "10px";
-  //   icsBtn.style.borderRadius = "5px";
-  //   icsBtn.style.fontSize = "10px";
-  //   icsBtn.style.textTransform = "uppercase";
-  //   icsBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
-  //   icsBtn.style.cursor = "pointer";
-  //   icsBtn.addEventListener("click", () => {
-  //     const eventDetails = {
-  //       title: `Chat with ${chat.user}`, // Replace with dynamic content
-  //       description: `AI Response: ${chat.ai}`, // Replace with dynamic content
-  //       location: "Online", // Optional: add a meaningful location
-  //       startDate: new Date(), // Replace with an appropriate timestamp
-  //       endDate: new Date(new Date().getTime() + 60 * 60 * 1000), // Example: 1-hour duration
-  //     };
-  //     generateICSFile(eventDetails);
-  //   });
-
-  //   // Buttons Container
-  //   const btnWrap = document.createElement("div");
-  //   btnWrap.className = "btn-wrap";
-
-  //   // Horizontal row for "Download Chat" and "Delete Chat"
-  //   const btnRow = document.createElement("div");
-  //   btnRow.className = "btn-row";
-  //   btnRow.appendChild(dlBtn); // Add "Download Chat" button
-  //   btnRow.appendChild(delBtn); // Add "Delete Chat" button
-
-  //   // Style the full-width "Download Event (.ICS)" button
-  //   icsBtn.className = "full-width-btn";
-
-  //   // Add the rows to the button container
-  //   btnWrap.appendChild(btnRow);
-  //   btnWrap.appendChild(icsBtn);
-
-  //   // Append the button container to the chat message
-  //   cMsg.appendChild(btnWrap);
-
-  //   // Assemble Chat Message
-  //   cMsg.appendChild(userDiv);
-  //   cMsg.appendChild(aiDiv);
-  //   cMsg.appendChild(timeDiv);
-  //   cMsg.appendChild(btnWrap);
-
-  //   // Prepend to show latest chat at the top
-  //   chatHistoryDiv.prepend(cMsg);
-  // }
   function appendChatMessage(chat) {
     if (!chat) return;
 
@@ -1107,6 +989,7 @@ ${sanitizedAI}
     const cMsg = document.createElement("div");
     cMsg.className = "chat-message";
     cMsg.style.backgroundColor = getBackgroundColor(action);
+    cMsg.style.border = "1px solid #0000001a";
     cMsg.classList.add(action);
 
     // === USER DIV ===
@@ -1143,7 +1026,7 @@ ${sanitizedAI}
     dlBtn.style.borderRadius = "5px";
     dlBtn.style.fontSize = "10px";
     dlBtn.style.textTransform = "uppercase";
-    dlBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
+    // dlBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
     dlBtn.style.cursor = "pointer";
     dlBtn.addEventListener("click", () => downloadChat(chat));
 
@@ -1159,7 +1042,7 @@ ${sanitizedAI}
     delBtn.style.borderRadius = "5px";
     delBtn.style.fontSize = "10px";
     delBtn.style.textTransform = "uppercase";
-    delBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
+    // delBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
     delBtn.style.cursor = "pointer";
     delBtn.style.marginLeft = "10px";
     delBtn.setAttribute("data-chat-id", chat.id);
@@ -1173,6 +1056,7 @@ ${sanitizedAI}
     icsBtn.className = "download-chat";
     icsBtn.textContent = "Download Event (.ics)";
     icsBtn.style.marginTop = "5px";
+    icsBtn.style.marginBottom = "5px";
     icsBtn.style.backgroundColor = getBackgroundColor(action);
     icsBtn.style.border = "1px solid #0000001a";
     icsBtn.style.color = "#333";
@@ -1180,7 +1064,7 @@ ${sanitizedAI}
     icsBtn.style.borderRadius = "5px";
     icsBtn.style.fontSize = "10px";
     icsBtn.style.textTransform = "uppercase";
-    icsBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
+    // icsBtn.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.2)";
     icsBtn.style.cursor = "pointer";
     icsBtn.addEventListener("click", () => {
       const eventDetails = {

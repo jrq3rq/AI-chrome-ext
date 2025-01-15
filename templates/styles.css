@@ -31,7 +31,7 @@ button {
   display: flex;
   flex-direction: column; /* Arrange rows vertically */
   gap: 10px; /* Space between rows */
-  margin-top: 10px;
+  margin-top: 5px;
   width: 100%; /* Span the width of the container */
 }
 
@@ -117,10 +117,6 @@ button {
 }
 
 /* Optional: Style for buttons within chat messages */
-.btn-wrap button {
-  margin-right: 10px;
-}
-
 .formatted-response {
   overflow-wrap: break-word; /* Allows long words to break and wrap */
   font-family: Arial, sans-serif;
@@ -268,7 +264,7 @@ button {
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s, transform 0.1s;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 button:hover {
@@ -853,7 +849,7 @@ button#close-modal:hover {
 /* Footer Style */
 footer {
   margin-top: 20px;
-  font-size: 10px;
+  font-size: 8px;
   color: #aaa;
   text-align: center;
 }
