@@ -54,7 +54,18 @@
           aria-hidden="true"
         />
       </div>
-
+      <!-- AI Response Section -->
+      <div id="response">
+        <div class="ai">
+          <strong>AI Chatbot:</strong>
+          <div class="formatted-response"></div>
+        </div>
+      </div>
+      <!-- Existing Buttons -->
+      <div class="button-container">
+        <button id="send-prompt">Send</button>
+        <button id="clear-history">Clear Chat</button>
+      </div>
       <!-- Uploaded File Indicator -->
       <div id="upload-indicator" class="hidden" aria-live="polite">
         <span id="uploaded-filename"></span>
@@ -65,17 +76,48 @@
         <button id="clear-file">Clear File</button>
       </div>
     </div>
-    <!-- AI Response Section -->
-    <div id="response">
-      <div class="ai">
-        <strong>AI Chatbot:</strong>
-        <div class="formatted-response"></div>
+
+    <!-- TTS Controls Section -->
+    <div class="tts-toggle-container">
+      <!-- Enable/Disable TTS -->
+      <div class="toggle-row">
+        <input
+          type="checkbox"
+          id="tts-toggle"
+          aria-label="Enable Text-to-Speech"
+        />
+        <label for="tts-toggle">Enable TTS</label>
       </div>
-    </div>
-    <!-- Existing Buttons -->
-    <div class="button-container">
-      <button id="send-prompt">Send</button>
-      <button id="clear-history">Clear Chat</button>
+
+      <!-- Play Last AI Response -->
+      <div class="button-row">
+        <button id="tts-play-button" disabled>Play Last</button>
+        <button id="tts-stop-button" disabled>Stop</button>
+      </div>
+
+      <!-- Speed and Voice Selection -->
+      <div class="settings-row">
+        <label for="tts-voice-select">Voice:</label>
+        <select id="tts-voice-select" aria-label="Select Voice">
+          <option value="default">Default</option>
+        </select>
+
+        <label for="tts-speed-range">Speed:</label>
+        <input
+          type="range"
+          id="tts-speed-range"
+          min="0.5"
+          max="2"
+          step="0.1"
+          value="1"
+          aria-label="Set Speech Speed"
+        />
+      </div>
+
+      <!-- Status Indicator -->
+      <div id="tts-status" class="status-row" aria-live="polite">
+        TTS Status: Disabled
+      </div>
     </div>
     <!-- Filter Section -->
     <div class="filter-container">
@@ -92,6 +134,7 @@
         <option value="generate-bullet-points">Generate Bullet Points</option>
       </select>
     </div>
+
     <!-- Download All Chats Button -->
     <button id="save-all-chats">Download All Chats</button>
 

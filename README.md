@@ -45,6 +45,7 @@ grok-api-interaction-database/
 │ ├── clientMetadata.js # Centralized metadata file for client-specific information (unchanged)
 │ ├── ai-service.js # Wrapper for AI interactions (unchanged)
 │ ├── calendar-util.js # Function for generating .ics files in a separate module
+│ ├── tts-service.js # **NEW** Centralized TTS service for reusable logic
 │ └── summarization-service.js
 ├── templates/ # Templates for UI components and default logic (unchanged)
 │ ├── popup.js # Frontend JS for Chrome extension popup
@@ -71,6 +72,9 @@ grok-api-interaction-database/
 │ - formatAndTruncateResponse(message)               │
 │ - displayResponse(message)                         │
 │ - displayMetadata(metadata)                        │
+│ - sanitizeTextForTTS(text)                         │
+│ - speakAIResponse(response)                        │
+│ - stopTTS()                                        │
 │ - userRequestsMetadata(input)                      │
 │ - processInput(action, userInput)                  │
 │ - saveChatMessageToLocalStorage(message)           │
@@ -82,6 +86,8 @@ grok-api-interaction-database/
 │ 2. Element References and Event Listeners          │
 │ - saveAllChatsButton, overlay triggers             │
 │ - fileInput, sendButton, clearHistoryButton, etc.  │
+│ - ttsVoiceSelect, ttsSpeedRange                    │
+│ - ttsPlayButton, ttsStopButton                     │
 │ - Hook LocalStorage methods to appropriate events  │
 └────────────────────────────────────────────────────┘
                     │
@@ -94,6 +100,7 @@ grok-api-interaction-database/
 │   - Prepend to chatHistoryDiv                      │
 │ - updateSaveChatsButtonVisibility()                │
 │ - scrollTop = 0                                    │
+│ - Populate TTS voice dropdown                      │
 └────────────────────────────────────────────────────┘
                     │
                     ▼
@@ -102,6 +109,7 @@ grok-api-interaction-database/
 │ - If file is selected, process OCR or file text    │
 │ - Else use text input directly                     │
 │ - processInput(action, userInput) is called        │
+│ - Automatically play AI response via TTS           │
 └────────────────────────────────────────────────────┘
                     │
                     ▼
@@ -115,8 +123,9 @@ grok-api-interaction-database/
 │ (2) POST to /chat endpoint on server               │
 │ (3) Clean up AI response (remove prompt, etc)      │
 │ (4) displayResponse(finalAIResponse)               │
-│ (5) saveChatMessageToLocalStorage(AI response)     │
-│ (6) loadChatHistoryFromLocalStorage()              │
+│ (5) speakAIResponse(finalAIResponse)               │
+│ (6) saveChatMessageToLocalStorage(AI response)     │
+│ (7) loadChatHistoryFromLocalStorage()              │
 └────────────────────────────────────────────────────┘
                     │
                     ▼
@@ -134,6 +143,7 @@ grok-api-interaction-database/
 │ - Retrieve chat data from chrome.storage.local     │
 │ - Rebuild UI from retrieved messages               │
 │ - Attach "Download Chat" & "Delete Chat" buttons   │
+│ - Attach TTS Play/Stop handlers for each chat      │
 │ - Optionally limit to the latest 10 messages       │
 └────────────────────────────────────────────────────┘
                     │
@@ -143,5 +153,7 @@ grok-api-interaction-database/
 │ - Clear Chats: Deletes messages from LocalStorage  │
 │ - Save All Chats: Fetches and downloads all chats  │
 │ - Update overlays and button states dynamically    │
+│ - Enable/Disable TTS Play/Stop buttons dynamically │
 └────────────────────────────────────────────────────┘
+
 ```

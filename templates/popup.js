@@ -1,5 +1,6 @@
 import { generateICSFile } from "../core/calendar-util.js";
 import clientMetadata from "../core/clientMetadata.js";
+import ttsService from "../core/tts-service.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   /********************************************************
@@ -39,6 +40,72 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /********************************************************
+   * ============  Chrome TTS Integration  ================
+   ********************************************************/
+  const ttsToggle = document.getElementById("tts-toggle"); // Checkbox to enable TTS
+  const ttsPlayButton = document.getElementById("tts-play-button");
+  const ttsStopButton = document.getElementById("tts-stop-button");
+  const ttsVoiceSelect = document.getElementById("tts-voice-select");
+  const ttsSpeedRange = document.getElementById("tts-speed-range");
+  const ttsStatus = document.getElementById("tts-status");
+
+  // Populate available voices in the dropdown
+  function populateVoices() {
+    const voices = speechSynthesis.getVoices();
+    ttsVoiceSelect.innerHTML = ""; // Clear existing options
+
+    voices.forEach((voice, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = `${voice.name} (${voice.lang})`;
+      if (voice.default) option.textContent += " [default]";
+      ttsVoiceSelect.appendChild(option);
+    });
+  }
+
+  // Initialize voices when available
+  speechSynthesis.onvoiceschanged = populateVoices;
+  populateVoices();
+
+  // Enable/disable TTS
+  ttsToggle.addEventListener("change", (e) => {
+    const isEnabled = e.target.checked;
+    ttsStatus.textContent = isEnabled ? "TTS Enabled" : "TTS Disabled";
+    ttsPlayButton.disabled = !isEnabled;
+    ttsStopButton.disabled = !isEnabled;
+  });
+
+  // Play TTS
+  ttsPlayButton.addEventListener("click", () => {
+    const responseDiv = document.querySelector(".formatted-response");
+    const textToSpeak =
+      responseDiv.textContent || "No response available to speak.";
+
+    if (!textToSpeak.trim()) {
+      alert("Nothing to read.");
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    const voices = speechSynthesis.getVoices();
+    const selectedVoice = voices[ttsVoiceSelect.value] || voices[0];
+
+    utterance.voice = selectedVoice;
+    utterance.rate = parseFloat(ttsSpeedRange.value);
+    utterance.onstart = () => (ttsStatus.textContent = "Speaking...");
+    utterance.onend = () => (ttsStatus.textContent = "TTS Enabled");
+
+    speechSynthesis.speak(utterance);
+  });
+
+  // Stop TTS
+  ttsStopButton.addEventListener("click", () => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      ttsStatus.textContent = "TTS Stopped";
+    }
+  });
   // Removes AI label prefix
   function removeAILabel(response) {
     const prefix = "Enhancer AI:";
@@ -248,6 +315,72 @@ document.addEventListener("DOMContentLoaded", () => {
     return wrapper;
   }
 
+  // function displayResponse(msg) {
+  //   const responseDiv = document.querySelector(".formatted-response");
+
+  //   // Clear any existing content
+  //   responseDiv.innerHTML = "";
+
+  //   // Apply styles dynamically
+  //   responseDiv.style.fontSize = "14px";
+  //   responseDiv.style.lineHeight = "1.6";
+  //   responseDiv.style.fontFamily = "'Verdana', sans-serif";
+  //   responseDiv.style.color = "#333";
+  //   responseDiv.style.marginTop = "10px";
+
+  //   // Split the message into lines for special formatting
+  //   const lines = msg
+  //     .split(/\n+/) // Split by newlines
+  //     .map((line) => line.trim())
+  //     .filter((line) => line.length > 0); // Remove empty lines
+
+  //   // Iterate over each line and handle formatting
+  //   lines.forEach((line) => {
+  //     const lineWrapper = document.createElement("div");
+
+  //     // Check if the line is a numbered item or unordered list
+  //     if (/^\d+\.\s/.test(line) || /^-\s/.test(line)) {
+  //       lineWrapper.style.marginBottom = "10px"; // Add spacing
+  //       lineWrapper.style.fontWeight = "bold"; // Optional bold for emphasis
+  //     }
+
+  //     lineWrapper.textContent = line; // Set the line content
+  //     responseDiv.appendChild(lineWrapper);
+  //   });
+  // }
+
+  function sanitizeTextForTTS(text) {
+    // Remove bold formatting (**...**)
+    return text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+  }
+
+  function speakAIResponse(text) {
+    if (!text.trim()) return; // Avoid speaking empty strings
+
+    // Sanitize text to remove Markdown syntax
+    const sanitizedText = sanitizeTextForTTS(text);
+
+    const utterance = new SpeechSynthesisUtterance(sanitizedText);
+
+    // Set the voice from the dropdown
+    const selectedVoiceName = ttsVoiceSelect.value;
+    utterance.voice = window.speechSynthesis
+      .getVoices()
+      .find((voice) => voice.name === selectedVoiceName);
+
+    // Set the speed from the range input
+    utterance.rate = parseFloat(ttsSpeedRange.value);
+
+    // Speak the utterance
+    window.speechSynthesis.speak(utterance);
+
+    // Update status while speaking
+    ttsStatus.textContent = "Speaking...";
+    utterance.onend = () => {
+      ttsStatus.textContent = "Idle";
+    };
+  }
+
   function displayResponse(msg) {
     const responseDiv = document.querySelector(".formatted-response");
 
@@ -280,6 +413,11 @@ document.addEventListener("DOMContentLoaded", () => {
       lineWrapper.textContent = line; // Set the line content
       responseDiv.appendChild(lineWrapper);
     });
+
+    // **Trigger TTS if enabled**
+    if (ttsToggle.checked) {
+      speakAIResponse(msg);
+    }
   }
 
   // Shows metadata in the UI
@@ -693,53 +831,6 @@ ${sanitizedAI}
       )
     );
   }
-
-  // function saveChatHistory(userMessage, aiResponse, action) {
-  //   // Skip saving metadata requests
-  //   if (userRequestsMetadata(userMessage)) {
-  //     console.log("Metadata request detected. Not saving to chat history.");
-  //     return null;
-  //   }
-  //   const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-  //   const timestamp = new Date().toISOString();
-
-  //   // No more removing first sentence. Keep them intact.
-  //   const cleanedUserMessage = userMessage.trim();
-  //   const cleanedAIResponse = aiResponse.trim();
-
-  //   const finalUserMessage = removeAILabel(cleanedUserMessage);
-  //   const finalAIResponse = removeAILabel(cleanedAIResponse);
-
-  //   const chatHash = base64EncodeUnicode(
-  //     `${finalUserMessage}_${finalAIResponse}_${action}`
-  //   );
-
-  //   const newChat = {
-  //     id: generateUniqueId(),
-  //     user: finalUserMessage,
-  //     ai: finalAIResponse,
-  //     action: action,
-  //     time: timestamp,
-  //     hash: chatHash,
-  //   };
-
-  //   chatHistory.unshift(newChat);
-
-  //   if (chatHistory.length > 10) {
-  //     chatHistory.pop();
-  //   }
-
-  //   try {
-  //     localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
-  //     console.log("Chat history saved successfully:", chatHistory);
-  //     updateChatHistoryVisibility();
-  //     return newChat;
-  //   } catch (error) {
-  //     console.error("Error saving chat history:", error);
-  //     alert("An error occurred while saving the chat history.");
-  //     return null;
-  //   }
-  // }
 
   function stripHtmlTags(str) {
     // Remove anything that looks like an HTML tag

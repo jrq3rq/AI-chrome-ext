@@ -21,6 +21,119 @@ body {
   overflow: hidden; /* Prevent overflow outside rounded corners */
 }
 
+/* TTS UI Container */
+.tts-toggle-container {
+  display: flex;
+  flex-direction: column; /* Arrange elements vertically */
+  align-items: center; /* Center-align items horizontally */
+  gap: 12px; /* Space between child elements */
+  margin-bottom: 20px; /* Center horizontally within the parent container */
+  padding: 16px; /* Add consistent inner spacing */
+  border: 1px solid #ccc; /* Subtle border for separation */
+  border-radius: 8px; /* Slightly larger rounding for modern look */
+  background-color: #f9f9f9; /* Light background to differentiate the section */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Full width of parent container */
+  max-width: 400px; /* Limit width to avoid being too wide */
+}
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+/* Label Styling */
+.tts-toggle-container label {
+  font-weight: bold;
+  font-size: 14px; /* Ensure text is legible */
+  cursor: pointer;
+  color: #333;
+}
+
+/* Button Styling */
+.tts-toggle-container button {
+  background-color: #e3e3e3; /* Light gray for inactive buttons */
+  border: none;
+  padding: 8px 16px; /* Comfortable padding for buttons */
+  border-radius: 4px;
+  font-size: 14px; /* Standard button font size */
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; /* Smooth hover effect */
+}
+
+/* Button Hover Effects */
+.tts-toggle-container button:hover:not(:disabled) {
+  background-color: #d6d6d6; /* Slightly darker gray */
+}
+
+.tts-toggle-container button:disabled {
+  background-color: #cccccc; /* Disabled state */
+  cursor: not-allowed;
+}
+
+/* Prevent Text Wrapping in Buttons */
+#tts-play-button,
+#tts-stop-button {
+  white-space: nowrap; /* Keep text in one line */
+  font-size: 14px; /* Consistent button text size */
+  height: 40px; /* Ensure uniform button height */
+  width: 150px;
+}
+
+/* Voice and Speed Controls */
+.tts-toggle-container .settings-row {
+  display: flex;
+  flex-wrap: wrap; /* Wrap controls if they don't fit in one row */
+  gap: 12px; /* Space between controls */
+  justify-content: center; /* Center-align the controls */
+  width: 100%; /* Full width of container */
+}
+
+.tts-toggle-container select,
+.tts-toggle-container input[type="range"] {
+  flex: 1; /* Allow controls to scale evenly */
+  max-width: 180px; /* Limit control width */
+}
+
+.tts-toggle-container select {
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.tts-toggle-container input[type="range"] {
+  appearance: none;
+  width: 100%; /* Full width within its container */
+  height: 6px;
+  background: #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: background 0.3s;
+}
+
+.tts-toggle-container input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #4caf50; /* Match brand color */
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.tts-toggle-container input[type="range"]:hover::-webkit-slider-thumb {
+  background: #388e3c; /* Slightly darker green on hover */
+}
+
+/* Status Indicator */
+.tts-toggle-container #tts-status {
+  font-size: 12px; /* Smaller text for status */
+  color: #555; /* Neutral gray */
+  font-style: italic; /* Distinguish as dynamic feedback */
+  text-align: center;
+  margin-top: 8px; /* Add spacing above */
+}
+
 button {
   display: flex;
   align-items: center;
@@ -288,6 +401,22 @@ button:active {
 }
 
 #clear-history:hover {
+  background-color: #d32f2f;
+}
+
+#tts-play-button {
+  border-radius: 8px;
+  background-color: #4caf50; /* Green for the Send button */
+}
+#tts-play-button:hover {
+  background-color: #45a049;
+}
+
+#tts-stop-button {
+  border-radius: 8px;
+  background-color: #f44336;
+}
+#tts-stop-button:hover {
   background-color: #d32f2f;
 }
 
