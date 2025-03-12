@@ -1,4 +1,4 @@
-# Grok API Interaction
+# API Interaction
 
 <!-- ![Practice Area](clients/business-name/branding/practice_area.png) -->
 <img src="clients/business-name/branding/practice_area.png" alt="Logo" height="500" />
